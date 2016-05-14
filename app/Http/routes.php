@@ -30,3 +30,5 @@ Route::get('/', function () {
 
 Route::get('/datamigration', 'User@tansaction_data');
 
+Route::get('/postdatamigration', 'Post@post_data');
+
