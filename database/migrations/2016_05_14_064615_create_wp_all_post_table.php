@@ -31,7 +31,7 @@ class CreateWpAllPostTable extends Migration
             $table->string('social_media_data',50);
             $table->text('team');
             $table->text('faq');
-            $table->integer('campaign_foreign');
+            $table->text('campaign_foreign');
             $table->text('video');
         });
     }

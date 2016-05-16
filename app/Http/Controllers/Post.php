@@ -32,16 +32,11 @@ class Post extends Controller
 
     		if(strpos($value['meta_key'], 'contributor_message') !== false)
     		{
-    			
-    			  $data['contributor_message'][$key] = $value['meta_key'].':'. $value['meta_value'] ;
-    			
-    			
+    			$data['contributor_message'][$key] = array($value['meta_key'] => $value['meta_value']);
     		}
     		if(strpos($value['meta_key'],'description_')!== false)
     		{
-    			
-    			  $data['description'][$key] = $value['meta_key'].':'. $value['meta_value'] ;
-    			
+    			$data['description'][$key] = array($value['meta_key'] => $value['meta_value']) ;
     		}
     		if (strpos($value['meta_key'],'target')!== false) {
     			 $data['target'] = $value['meta_value'];
@@ -64,29 +59,43 @@ class Post extends Controller
     			$data['payment_type'] = $value['meta_value'];
     			
     		}
-    		if (strpos($value['meta_key'],'facebook_')!== false || strpos($value['meta_key'],'twitter_')!== false || strpos($value['meta_key'],'fb_')!== false) {
-    				$data['social_media_data'][$key] = $value['meta_key'].':'. $value['meta_value'] ;
+    		if (strpos($value['meta_key'],'facebook_')!== false || strpos($value['meta_key'],'twitter_')!== false || strpos($value['meta_key'],'fb_')!== false ) 
+    		{
+    				if(strpos($value['meta_key'], "description_") === false and strpos($value['meta_key'], "team_") === false )
+    				{
+    					$data['social_media_data'][$key] = array($value['meta_key'] => $value['meta_value']) ;
+    				}
     				
     		}
     		if (strpos($value['meta_key'],'team_')!== false) {
-    			$data['team'][$key] = $value['meta_key'].':'. $value['meta_value'] ;
+    			$data['team'][$key] = array($value['meta_key'] => $value['meta_value']) ;
     			
     		}
     		if (strpos($value['meta_key'],'faq')!== false) {
-    			$data['faq'][$key] = $value['meta_key'].':'. $value['meta_value'] ;
+    			$data['faq'][$key] = array($value['meta_key'] => $value['meta_value']) ;
     			
     		}
     		if (strpos($value['meta_key'],'campaign_foreign')!== false) {
-    			$data['campaign_foreign'][$key] = $value['meta_value'];
+    			$data['campaign_foreign'][$key] =  array($value['meta_key'] => $value['meta_value']);
     			
     		}
     		if (strpos($value['meta_key'],'video')!== false) {
-    			$data['video'][$key] = $value['meta_key'].':'. $value['meta_value'] ;
+    			$data['video'][$key] = array($value['meta_key'] => $value['meta_value']) ;
     			
     		}
     	}
-    	
+    	 		
+    	 		
+
     			$result = array();
+    			$contributor_message = json_encode(array_values($data['contributor_message']));
+    			$social_media_data = json_encode(array_values($data['social_media_data']));
+    			$description = json_encode(array_values($data['description']));
+    			$team = json_encode(array_values($data['team']));
+    			$faq = json_encode(array_values($data['faq']));
+    			$campaign_foreign = json_encode(array_values($data['campaign_foreign']));
+    			$video = json_encode(array_values($data['video']));
+    			
     			$result = new AllPost();
 				$result->post_author = $data['post_author'];
 				$result->post_date = $data['post_date'];
@@ -96,21 +105,23 @@ class Post extends Controller
 				$result->ping_status = $data['ping_status'];
 				$result->post_name = $data['post_name'];
 				$result->post_type = $data['post_type'];
-				$result->contributor_message = json_encode(array_values(array_unique($data['contributor_message'])));
+				$result->contributor_message = $contributor_message;
 				$result->target = $data['target'];
 				$result->launch_status = $data['launch_status'];
 				$result->launch_status_date = $data['launch_status_date'];
-				$result->social_media_data = json_encode(array_values(array_unique($data['social_media_data'])));
-				$result->description = json_encode(array_values(array_unique($data['description'])));
+				$result->social_media_data = $social_media_data;
+				$result->description = $description;
 				$result->budget = $data['budget'];
-				$result->team = json_encode(array_values(array_unique($data['team'])));
-				$result->faq = json_encode(array_values(array_unique($data['faq'])));
-				$result->campaign_foreign = json_encode(array_values(array_unique($data['campaign_foreign'])));
-				$result->video = json_encode(array_values(array_unique($data['video'])));
+				$result->team = $team;
+				$result->faq = $faq;
+				$result->campaign_foreign = $campaign_foreign;
+				$result->video = $video;
+				$result->save(); 
+
+				echo "Success Done";
 				
 
-
-		    	$result->save();
+		    	
     }
 
 }

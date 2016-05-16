@@ -7,9 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class AllPost extends Model
 {
-    protected $table = 'wb_all_post';
-    protected $fillable = array('post_author', 'post_date','post_date_gmt', 'post_content', 'post_title', 'ping_status','post_name','post_type','target','budget','campaign_foreign');
-    public $timestamps = false;
+	public $timestamps = false;
+    protected $table = 'wp_all_post';
+    protected $fillable = array('post_author', 'post_date','post_date_gmt', 'post_content', 'post_title', 'ping_status','post_name','post_type','contributor_message','target','launch_status','launch_status_date','budget','campaign_foreign','faq','team','description','social_media_data','video');
+    
 
     public static function all_post_data()
     {
