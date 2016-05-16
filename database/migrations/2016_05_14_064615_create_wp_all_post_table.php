@@ -14,6 +14,7 @@ class CreateWpAllPostTable extends Migration
     {
         Schema::create('wp_all_post', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('post_id');
             $table->bigInteger('post_author');
             $table->dateTime('post_date');
             $table->dateTime('post_date_gmt');

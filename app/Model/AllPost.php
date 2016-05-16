@@ -14,9 +14,11 @@ class AllPost extends Model
 
     public static function all_post_data()
     {
-	    	$transation_data = DB::select(DB::raw("select a.id,a.post_author,a.post_date,a.post_date_gmt,a.post_content,a.post_title,a.ping_status,a.post_name,
-a.post_type,b.* from wp_posts a ,wp_postmeta b where a.id = 19826 and b.post_id = 19826 and a.post_type like '%campaign%'
-				"));
+	    $transation_data  = DB::select(DB::raw("select a.id,a.post_author,a.post_date,a.post_date_gmt,
+	    	                a.post_content,a.post_title,a.ping_status,a.post_name,a.post_type,b.* 
+	    	                from wp_posts a ,wp_postmeta b where a.id = b.post_id and a.post_type 
+	    	                like 'campaign%' order by a.id desc limit 300"));
+
 
            return $transation_data;
 
