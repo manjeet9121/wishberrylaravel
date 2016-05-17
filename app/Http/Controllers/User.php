@@ -41,10 +41,6 @@ class User extends Controller
 			    		$data[$key1]['created_on'] = $value['created_on'];
 			    		$data[$key1]['modified_on'] = $value['modified_on'];
 						
-			    		
-
-
-
 			    		if(strpos($value['meta_key'], 'shipping') !== false)
 			    		{
 			    			$data[$key1]['shipping_info'][$key] = array($value['meta_key'] => $value['meta_value'] );
@@ -96,8 +92,7 @@ class User extends Controller
 
     	}
 
-    	//echo "<pre>";print_r($data);
-
+    	
     	foreach ($data as  $key2 => $transvalue) 
     	{
     		
@@ -182,20 +177,34 @@ class User extends Controller
 	    		}
 
     			
-    		$shipping_info = json_encode(array_values(isset($transvalue['shipping_info']) ? $transvalue['shipping_info'] : ['null']));
+
+			    		$transaction_id = $transvalue['transaction_id'];
+			    		$shipping_info = json_encode(array_values(isset($transvalue['shipping_info']) ? $transvalue['shipping_info'] : ['null']));
+			    		$reward_id = is_array($transvalue['reward_id']) ? $transvalue['reward_id'][$key2] : $transvalue['reward_id'];
+			    		
+			    		$web_order_id = "wbf_".$transvalue['user_id']."_".$transvalue['campaign_id']."_".intval($reward_id)."_".$transaction_id;
+			    		
+			    		$anonymous = is_array($transvalue['anonymous']) ? $transvalue['anonymous'][$key2] : $transvalue['anonymous'];
+			    		$where_did_you_hear = is_array($transvalue['where_did_you_hear']) ? $transvalue['where_did_you_hear'][$key2] : $transvalue['where_did_you_hear'];
+			    		$known = is_array($transvalue['known']) ? $transvalue['known'][$key2] : $transvalue['known'];
+			    		$international = is_array($transvalue['international']) ? $transvalue['international'][$key2] : $transvalue['international'];
+			    		$transaction_status = is_array($transvalue['transaction_status']) ? $transvalue['transaction_status'][$key2] : $transvalue['transaction_status'];
+			    		$payment_type = is_array($transvalue['payment_type']) ? $transvalue['payment_type'][$key2] : $transvalue['payment_type'];
+			    		$service_tax = is_array($transvalue['service_tax']) ? $transvalue['service_tax'][$key2] : $transvalue['service_tax'];
+			    		$commission = is_array($transvalue['commission']) ? $transvalue['commission'][$key2] : $transvalue['commission'];
+			    		$total_cost = is_array($transvalue['total_cost']) ? $transvalue['total_cost'][$key2] : $transvalue['total_cost']; 
+
     		
-    		//echo "<pre>";print_r($transvalue);
     		
-    		$finaldata[] = array('web_order_id' => "wbf_".$transvalue['user_id']."_".$transvalue['campaign_id']."_".$transvalue['reward_id'][$key2]."_".$transvalue['transaction_id'],'campaign_id' => $transvalue['campaign_id'],'user_id' => $transvalue['user_id'],
-            	'type' => $transvalue['type'],'amount' => $transvalue['amount'],'payment_gateway' => $transvalue['payment_gateway'],'status' => $transvalue['status'],'settlement_status' => $transvalue['settlement_status']?$transvalue['settlement_status'] : 'null','shipping_info' => $shipping_info,'anonymous' => $transvalue['anonymous'][$key2],'where_did_you_hear' => $transvalue['where_did_you_hear'],'known' => $transvalue['known'],'international' => $transvalue['international'],'payment_gateway_transaction_status' => $transvalue['transaction_status'],'payment_type' => $transvalue['payment_type'] , 'service_tax' => $transvalue['service_tax'],'commission'=> $transvalue['commission'],'total_cost' => $transvalue['total_cost'],'created_on' => $transvalue['created_on'] ,'modified_on' =>  $transvalue['modified_on']
-
-
-            	);
-
+    		
+						$finaldata[] = array('wb_order_id' =>$web_order_id,'campaign_id' => $transvalue['campaign_id'],'user_id' => $transvalue['user_id'],
+            				'type' => $transvalue['type'],'amount' => $transvalue['amount'],'payment_gateway' => $transvalue['payment_gateway'],'status' => $transvalue['status'],'settlement_status' => $transvalue['settlement_status']?$transvalue['settlement_status'] : 'null','shipping_info' => $shipping_info,'anonymous' => $anonymous,'where_did_you_hear' => $where_did_you_hear,'known' => $known,'international' => $international,'payment_gateway_transaction_status' => $transaction_status,'payment_type' => $payment_type , 'service_tax' => $service_tax,'commission'=> $commission,'total_cost' => $total_cost,'created_on' => $transvalue['created_on'] ,'modified_on' =>  $transvalue['modified_on']);
+		    		
+    		
     		}
         }
 
-        echo "<pre>";print_r($finaldata);die;
+      
 
         AllTransaction::insert($finaldata);
 
