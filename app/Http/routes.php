@@ -32,3 +32,6 @@ Route::get('/datamigration', 'User@tansaction_data');
 
 Route::get('/postdatamigration', 'Post@post_data');
 
+
+Route::get('/excelgen','GenExcel@generate_excel');
+

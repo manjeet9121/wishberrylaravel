@@ -4,17 +4,19 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Model\AllTransaction;
+//use Maatwebsite\Excel\Excel;
 use Input;
 
 use App\Http\Requests;
 
-class User extends Controller
+class GenExcel extends Controller
 {
-    
-    public function tansaction_data()
+     public function generate_excel()
     {
+    	//echo "HIHIHI";die;
+
     	$tansaction_data = AllTransaction::all_transaction_data();
-    	
+
     	$indexkey = [];
     	$data = [];
     	$finaldata = [];
@@ -28,6 +30,7 @@ class User extends Controller
 
     			if($key1 = $value['id'])
     			{
+    				
 			    		$data[$key1]['id'] = $value['id'];
 			    		$data[$key1]['transaction_id'] = $value['transaction_id'];
 			    		$data[$key1]['campaign_id'] = $value['campaign_id'];
@@ -40,10 +43,11 @@ class User extends Controller
 			    		$data[$key1]['settlement_status'] = $value['settlement_status'];
 			    		$data[$key1]['created_on'] = $value['created_on'];
 			    		$data[$key1]['modified_on'] = $value['modified_on'];
+			    		$data[$key1]['post_title'] = $value['post_title'];
 						
 			    		if(strpos($value['meta_key'], 'shipping') !== false)
 			    		{
-			    			$data[$key1]['shipping_info'][$key] = array($value['meta_key'] => $value['meta_value'] );
+			    				$data[$key1]['shipping_info'][$key] = array($value['meta_key'] => $value['meta_value']);
 			    		}
 			    		if(strpos($value['meta_key'],'anonymous')!== false)
 			    		{
@@ -77,7 +81,7 @@ class User extends Controller
 			    			
 			    		}
 			    		if (strpos($value['meta_key'],'commission')!== false) {
-			    			$data[$key1]['commission'] = $value['meta_key'];
+			    			$data[$key1]['commission'] = $value['meta_value'];
 			    			
 			    		}
 			    		if (strpos($value['meta_key'],'total_cost')!== false) {
@@ -92,13 +96,13 @@ class User extends Controller
 
     	}
 
-    	
+    	//echo "<pre>";print_r($data);die;
+
     	foreach ($data as  $key2 => $transvalue) 
     	{
     		
     		if($key2 = $transvalue['id'])
     		{
-
     			if(!in_array('reward_id', $transvalue))
 	    		{
 	    			$transvalue['reward_id'][$key2] = '000';
@@ -175,41 +179,46 @@ class User extends Controller
 	    		}elseif (in_array('total_cost', $transvalue)) {
 	    			$transvalue['total_cost'][$key2] = $transvalue['total_cost'];
 	    		}
+	    	}
+	    	
+	    	$backer_name = array_unique(array_column($transvalue['shipping_info'],'shipping_name'));
+	    	
+	    	echo "<pre>";print_r($backer_name);
+	    	echo "<pre>";print_r($transvalue);
 
-    			
+	    }
 
-			    		$transaction_id = $transvalue['transaction_id'];
-			    		$shipping_info = json_encode(array_values(isset($transvalue['shipping_info']) ? $transvalue['shipping_info'] : ['null']));
-			    		$reward_id = is_array($transvalue['reward_id']) ? $transvalue['reward_id'][$key2] : $transvalue['reward_id'];
-			    		
-			    		$web_order_id = "wbf_".$transvalue['user_id']."_".$transvalue['campaign_id']."_".intval($reward_id)."_".$transaction_id;
-			    		
-			    		$anonymous = is_array($transvalue['anonymous']) ? $transvalue['anonymous'][$key2] : $transvalue['anonymous'];
-			    		$where_did_you_hear = is_array($transvalue['where_did_you_hear']) ? $transvalue['where_did_you_hear'][$key2] : $transvalue['where_did_you_hear'];
-			    		$known = is_array($transvalue['known']) ? $transvalue['known'][$key2] : $transvalue['known'];
-			    		$international = is_array($transvalue['international']) ? $transvalue['international'][$key2] : $transvalue['international'];
-			    		$transaction_status = is_array($transvalue['transaction_status']) ? $transvalue['transaction_status'][$key2] : $transvalue['transaction_status'];
-			    		$payment_type = is_array($transvalue['payment_type']) ? $transvalue['payment_type'][$key2] : $transvalue['payment_type'];
-			    		$service_tax = is_array($transvalue['service_tax']) ? $transvalue['service_tax'][$key2] : $transvalue['service_tax'];
-			    		$commission = is_array($transvalue['commission']) ? $transvalue['commission'][$key2] : $transvalue['commission'];
-			    		$total_cost = is_array($transvalue['total_cost']) ? $transvalue['total_cost'][$key2] : $transvalue['total_cost']; 
 
-    			
-    		
-    		
-						$finaldata[] = array('wb_order_id' =>$web_order_id,'campaign_id' => $transvalue['campaign_id'],'user_id' => $transvalue['user_id'],
-            				'type' => $transvalue['type'],'amount' => $transvalue['amount'],'payment_gateway' => $transvalue['payment_gateway'],'status' => $transvalue['status'],'settlement_status' => $transvalue['settlement_status']?$transvalue['settlement_status'] : 'null','shipping_info' => $shipping_info,'anonymous' => $anonymous,'where_did_you_hear' => $where_did_you_hear,'known' => $known,'international' => $international,'payment_gateway_transaction_status' => $transaction_status,'payment_type' => $payment_type , 'service_tax' => $service_tax,'commission'=> $commission,'total_cost' => $total_cost,'created_on' => $transvalue['created_on'] ,'modified_on' =>  $transvalue['modified_on']);
-		    		
-    		
-    		}
-        }
-        echo "<pre>";print_r($finaldata);die;
-      
 
-        AllTransaction::insert($finaldata);
 
-		echo "Success Done";
-	}
-    
+
+	    echo "HIII";die;
+    	//echo "<pre>";print_r($transvalue);
+
+    	/*\Excel::create('transactiondata', function($excel) 
+    	{
+	        // Set the title
+	        $excel->setTitle('no title');
+	        $excel->setCreator('no no creator')->setCompany('no company');
+	        $excel->setDescription('report file');
+
+	        $excel->sheet('sheet1', function($sheet) {
+		            $data = array(
+		                array('Transaction date', 'WB ID','PG ID','PG name','Amount','Campaign name','Campaign ID','Backer name','Backer ID','First time backer (y/n)','Personally know (y/n)','Where did you hear','Anonymous (y/n)','Backer email','Backer phone','Backer city','Backer country','International? (yes/no)','Method of payment','WB transaction status','PG trans status','Wishberry commission Rs. (=commission% * pledge amount)','PG Costs','Service Tax on PG Cost','Total PG cost Rs. (=pg cost + service tax on pg cost)'),
+		                array('data1', 'data2', 300, 400, 500, 0, 100),
+		                array('data1', 'data2', 300, 400, 500, 0, 100),
+		                array('data1', 'data2', 300, 400, 500, 0, 100),
+		                array('data1', 'data2', 300, 400, 500, 0, 100),
+		                array('data1', 'data2', 300, 400, 500, 0, 100),
+		                array('data1', 'data2', 300, 400, 500, 0, 100)
+		            );
+		            $sheet->fromArray($data, null, 'A1', false, false);
+		            $sheet->cells('A1:G1', function($cells) {
+		            $cells->setBackground('#AAAAFF');
+
+		            });
+	        	});
+    	})->download('xlsx');*/
+
+    }
 }
- 
