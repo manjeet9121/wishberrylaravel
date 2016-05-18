@@ -20,6 +20,7 @@ class GenExcel extends Controller
     	$indexkey = [];
     	$data = [];
     	$finaldata = [];
+    	$exceldata = [] ;
 
     	foreach ($tansaction_data as $key => $value) 
     	{
@@ -97,7 +98,8 @@ class GenExcel extends Controller
     	}
 
     	//echo "<pre>";print_r($data);die;
-
+    	$wishberry_commision = '';
+    	$i=0;
     	foreach ($data as  $key2 => $transvalue) 
     	{
     		
@@ -179,46 +181,163 @@ class GenExcel extends Controller
 	    		}elseif (in_array('total_cost', $transvalue)) {
 	    			$transvalue['total_cost'][$key2] = $transvalue['total_cost'];
 	    		}
+	    	
+
+
+	    	$exceldata[$key2]['Transaction Date'] =$transvalue['created_on'];
+	    	$reward_id = is_array($transvalue['reward_id']) ? $transvalue['reward_id'][$key2] : intval($transvalue['reward_id']);
+	    	$exceldata[$key2]['WB ID'] ="wbf_".$transvalue['user_id']."_".$transvalue['campaign_id']."_".$reward_id."_".$transvalue['transaction_id'];
+	    	$exceldata[$key2]['PG ID'] =isset($transvalue['payment_gateway_id']) ? $transvalue['payment_gateway_id'] : 'null';
+	    	$exceldata[$key2]['PG name'] =isset($transvalue['payment_gateway']) ? $transvalue['payment_gateway'] : 'null';
+	    	if($exceldata[$key2]['PG name'] == 1)
+	    	{
+	    		$exceldata[$key2]['PG name'] ='CCAvenue';
+	    	}
+	    	if($exceldata[$key2]['PG name'] == 2)
+	    	{
+	    		$exceldata[$key2]['PG name'] ='ECollectors';
+	    	}
+	    	if($exceldata[$key2]['PG name'] == 3)
+	    	{
+	    		$exceldata[$key2]['PG name'] ='PayU';
+	    	}
+	    	if($exceldata[$key2]['PG name'] == 5)
+	    	{
+	    		$exceldata[$key2]['PG name'] ='PAYTM';
+	    	}
+	    	if($exceldata[$key2]['PG name'] == 6)
+	    	{
+	    		$exceldata[$key2]['PG name'] ='DELHIVERY';
+	    	}
+	    	if($exceldata[$key2]['PG name'] == 10)
+	    	{
+	    		$exceldata[$key2]['PG name'] ='MANUAL UPDATE';
+	    	}
+
+	    	$exceldata[$key2]['Amount'] =isset($transvalue['amount']) ? intval($transvalue['amount']): 'null';
+	    	
+	    	$exceldata[$key2]['Campaign name'] =isset($transvalue['post_title']) ? $transvalue['post_title']: 'null';
+	    	$exceldata[$key2]['Campaign ID'] =$transvalue['campaign_id'];
+
+	    	$exceldata[$key2]['Backer name'] = array_unique(array_column($transvalue['shipping_info'],'shipping_name'));
+	    	$exceldata[$key2]['Backer name']  = !empty($exceldata[$key2]['Backer name']) ? $exceldata[$key2]['Backer name'][0] : 'null';
+
+	    	$exceldata[$key2]['Backer ID'] =$transvalue['user_id']; 
+	    	$exceldata[$key2]['First time backer (y/n)'] ='yes';
+			$exceldata[$key2]['Personally know (y/n)'] =is_array($transvalue['known']) ? $transvalue['known'][$key2] : intval($transvalue['known']);
+	    	
+	    	if($exceldata[$key2]['Personally know (y/n)'] == '0')
+	    	{
+	    		$exceldata[$key2]['Personally know (y/n)'] = 'No';
+	    	}
+	    	if ($exceldata[$key2]['Personally know (y/n)'] == '1') {
+	    		$exceldata[$key2]['Personally know (y/n)'] ='Yes';
+	    	}
+
+	    	$exceldata[$key2]['Where did you hear'] = is_array($transvalue['where_did_you_hear']) ? $transvalue['where_did_you_hear'][$key2] : $transvalue['where_did_you_hear'];
+
+	    	$exceldata[$key2]['Anonymous (y/n)'] = is_array($transvalue['anonymous']) ? $transvalue['anonymous'][$key2] : $transvalue['anonymous'];
+
+	    	$exceldata[$key2]['Backer email'] = array_unique(array_column($transvalue['shipping_info'],'shipping_email')); 
+	    	$exceldata[$key2]['Backer email'] = !empty($exceldata[$key2]['Backer email']) ? $exceldata[$key2]['Backer email'][0] : 'null'; 
+
+	    	$exceldata[$key2]['Backer phone'] = array_unique(array_column($transvalue['shipping_info'],'shipping_phone')); 
+	    	$exceldata[$key2]['Backer phone'] = !empty($exceldata[$key2]['Backer phone']) ? $exceldata[$key2]['Backer phone'][0] : 'null'; 
+
+	    	$backer_city = array_unique(array_column($transvalue['shipping_info'],'shipping_city'));
+	    	$exceldata[$key2]['Backer city'] = !empty($backer_city) ? $backer_city : 'null';  	
+
+	    	$exceldata[$key2]['Backer country'] = array_unique(array_column($transvalue['shipping_info'],'shipping_country'));
+	    	$exceldata[$key2]['Backer country'] = !empty($exceldata[$key2]['Backer country']) ? $exceldata[$key2]['Backer country'][0] : 'null'; 
+
+	    	$exceldata[$key2]['International? (yes/no)'] = is_array($transvalue['international']) ? $transvalue['international'][$key2] : $transvalue['international']; 	
+	    	$exceldata[$key2]['Method of payment'] = is_array($transvalue['payment_type']) ? $transvalue['payment_type'][$key2] : $transvalue['payment_type'];
+	    	$exceldata[$key2]['WB transaction status'] = is_array($transvalue['status']) ? $transvalue['status'][$key2] : $transvalue['status'];
+
+	    	if($exceldata[$key2]['WB transaction status'] == 1)
+	    	{
+	    		$exceldata[$key2]['WB transaction status'] = 'Initiated';
+	    	}
+
+	    	if($exceldata[$key2]['WB transaction status'] == 2)
+	    	{
+	    		$exceldata[$key2]['WB transaction status'] = 'Submitted';
 	    	}
 	    	
-	    	$backer_name = array_unique(array_column($transvalue['shipping_info'],'shipping_name'));
+	    	if($exceldata[$key2]['WB transaction status'] == 3)
+	    	{
+	    		$exceldata[$key2]['WB transaction status'] = 'Pending';
+	    	}
 	    	
-	    	echo "<pre>";print_r($backer_name);
-	    	echo "<pre>";print_r($transvalue);
+	    	if($exceldata[$key2]['WB transaction status'] == 4)
+	    	{
+	    		$exceldata[$key2]['WB transaction status'] = 'Successful';
+	    	}
+	    	
+	    	if($exceldata[$key2]['WB transaction status'] == 5)
+	    	{
+	    		$exceldata[$key2]['WB transaction status'] = 'Failed';
+	    	}
+	    	
+	    	if($exceldata[$key2]['WB transaction status'] == 6)
+	    	{
+	    		$exceldata[$key2]['WB transaction status'] = 'Deleted';
+	    	}
+	    	
+	    	if($exceldata[$key2]['WB transaction status'] == 7)
+	    	{
+	    		$exceldata[$key2]['WB transaction status'] = 'Cancelled';
+	    	}
+	    	
+	    	if($exceldata[$key2]['WB transaction status'] == 8)
+	    	{
+	    		$exceldata[$key2]['WB transaction status'] = 'On the Way';
+	    	}
+	    	
+	    	if($exceldata[$key2]['WB transaction status'] == 9)
+	    	{
+	    		$exceldata[$key2]['WB transaction status'] = 'Deferred by Customer';
+	    	}
+	    	
+
+	    	$exceldata[$key2]['PG trans status'] = is_array($transvalue['transaction_status']) ? $transvalue['transaction_status'][$key2] : $transvalue['transaction_status'];
+
+	    	if(is_string($exceldata[$key2]['Amount']))
+	    	{
+	    		$exceldata[$key2]['Wishberry commission Rs. (=commission% * pledge amount)'] = 'null' ;
+	    		$exceldata[$key2]['PG Costs'] = 'null';
+	    		$exceldata[$key2]['Service Tax on PG Cost'] = 'null';
+	    		$exceldata[$key2]['Total PG cost Rs. (=pg cost + service tax on pg cost)'] = 'null';
+	    	}else{
+	    		$exceldata[$key2]['Wishberry commission Rs. (=commission% * pledge amount)'] = 10/100 * $exceldata[$key2]['Amount'] ;
+	    		$exceldata[$key2]['PG Costs'] = 2/100 * $exceldata[$key2]['Amount'];
+	    		$exceldata[$key2]['Service Tax on PG Cost'] = 14.5/100 * $exceldata[$key2]['PG Costs'];
+	    		$exceldata[$key2]['Total PG cost Rs. (=pg cost + service tax on pg cost)'] = $exceldata[$key2]['Service Tax on PG Cost'] + $exceldata[$key2]['PG Costs'];
+	    	}
+
+	    	}
 
 	    }
+	    	//echo "<pre>";print_r($exceldata);die;
+
+	    	$filename = 'All transactions';
+	    	\Excel::create($filename, function($excel) use ($filename, $exceldata) {
+
+			        // Set the title
+			        $excel->setTitle($filename);
+
+			        // Chain the setters
+			        $excel->setCreator('Damilola Ogunmoye');
+
+			        $excel->sheet('SHEETNAME', function($sheet) use ($exceldata) {
 
 
+			            $sheet->fromArray($exceldata);
 
+			        });
 
+			    })->download('xls');
+	    
 
-	    echo "HIII";die;
-    	//echo "<pre>";print_r($transvalue);
-
-    	/*\Excel::create('transactiondata', function($excel) 
-    	{
-	        // Set the title
-	        $excel->setTitle('no title');
-	        $excel->setCreator('no no creator')->setCompany('no company');
-	        $excel->setDescription('report file');
-
-	        $excel->sheet('sheet1', function($sheet) {
-		            $data = array(
-		                array('Transaction date', 'WB ID','PG ID','PG name','Amount','Campaign name','Campaign ID','Backer name','Backer ID','First time backer (y/n)','Personally know (y/n)','Where did you hear','Anonymous (y/n)','Backer email','Backer phone','Backer city','Backer country','International? (yes/no)','Method of payment','WB transaction status','PG trans status','Wishberry commission Rs. (=commission% * pledge amount)','PG Costs','Service Tax on PG Cost','Total PG cost Rs. (=pg cost + service tax on pg cost)'),
-		                array('data1', 'data2', 300, 400, 500, 0, 100),
-		                array('data1', 'data2', 300, 400, 500, 0, 100),
-		                array('data1', 'data2', 300, 400, 500, 0, 100),
-		                array('data1', 'data2', 300, 400, 500, 0, 100),
-		                array('data1', 'data2', 300, 400, 500, 0, 100),
-		                array('data1', 'data2', 300, 400, 500, 0, 100)
-		            );
-		            $sheet->fromArray($data, null, 'A1', false, false);
-		            $sheet->cells('A1:G1', function($cells) {
-		            $cells->setBackground('#AAAAFF');
-
-		            });
-	        	});
-    	})->download('xlsx');*/
-
-    }
+	}
 }
