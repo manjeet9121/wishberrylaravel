@@ -16,7 +16,7 @@ class GenExcel extends Controller
     	//echo "HIHIHI";die;
 
     	$tansaction_data = AllTransaction::all_transaction_data();
-
+    	//echo "<pre>";print_r($tansaction_data);die;
     	$indexkey = [];
     	$data = [];
     	$finaldata = [];
@@ -38,13 +38,13 @@ class GenExcel extends Controller
 			    		$data[$key1]['user_id'] = $value['user_id'];
 			    		$data[$key1]['type'] = $value['type'];
 			    		$data[$key1]['amount']= $value['amount'];
-			    		$data[$key1]['payment_gateway'] = $value['payment_gateway'];
-			    		$data[$key1]['payment_gateway_id'] = $value['payment_gateway_id'];
+			    		$data[$key1]['payment_gateway'] = isset($value['payment_gateway'])?$value['payment_gateway']:'null';
+			    		$data[$key1]['payment_gateway_id'] = isset($value['payment_gateway_id'])?$value['payment_gateway']:'null';
 			    		$data[$key1]['status'] = $value['status'];
 			    		$data[$key1]['settlement_status'] = $value['settlement_status'];
 			    		$data[$key1]['created_on'] = $value['created_on'];
 			    		$data[$key1]['modified_on'] = $value['modified_on'];
-			    		$data[$key1]['post_title'] = $value['post_title'];
+			    		//$data[$key1]['post_title'] = $value['post_title'];
 						
 			    		if(strpos($value['meta_key'], 'shipping') !== false)
 			    		{
@@ -99,7 +99,7 @@ class GenExcel extends Controller
 
     	//echo "<pre>";print_r($data);die;
     	$wishberry_commision = '';
-    	$i=0;
+    	/*$i=0;*/
     	foreach ($data as  $key2 => $transvalue) 
     	{
     		
@@ -112,23 +112,24 @@ class GenExcel extends Controller
 	    		}
 	    		elseif(in_array('reward_id', $transvalue))
 	    		{
-	    			$transvalue['reward_id'][$key2] = $transvalue['reward_id'];
+	    			$transvalue['reward_id'][$key2] = isset($transvalue['reward_id'])?$transvalue['reward_id']:'null';
 	    			
 	    		}
 
+	    	
 
 	    		if(!in_array('anonymous', $transvalue))
 	    		{
 	    			$transvalue['anonymous'][$key2] = 'null';
 	    		}elseif (in_array('anonymous', $transvalue)) {
-	    			$transvalue['anonymous'][$key2] = $transvalue['anonymous'];
+	    			$transvalue['anonymous'][$key2] = isset($transvalue['anonymous'])?$transvalue['anonymous']:'null';
 	    		}
 
 	    		if(!in_array('where_did_you_hear', $transvalue))
 	    		{
 	    			$transvalue['where_did_you_hear'][$key2] = 'null';
 	    		}elseif (in_array('where_did_you_hear', $transvalue)) {
-	    			$transvalue['where_did_you_hear'][$key2] = $transvalue['where_did_you_hear'];
+	    			$transvalue['where_did_you_hear'][$key2] = isset($transvalue['where_did_you_hear'])?$transvalue['where_did_you_hear']:'null';
 	    		}
 
 
@@ -136,35 +137,35 @@ class GenExcel extends Controller
 	    		{
 	    			$transvalue['known'][$key2] = 'null';
 	    		}elseif (in_array('known', $transvalue)) {
-	    			$transvalue['known'][$key2] = $transvalue['known'];
+	    			$transvalue['known'][$key2] = isset($transvalue['known'])?$transvalue['known']:'null';
 	    		}
 
 	    		if(!in_array('international', $transvalue))
 	    		{
 	    			$transvalue['international'][$key2] = 'null';
 	    		}elseif (in_array('international', $transvalue)) {
-	    			$transvalue['international'][$key2] = $transvalue['international'];
+	    			$transvalue['international'][$key2] = isset($transvalue['international'])?$transvalue['international']:'null';
 	    		}
 
 	    		if(!in_array('transaction_status', $transvalue))
 	    		{
 	    			$transvalue['transaction_status'][$key2] = 'null';
 	    		}elseif (in_array('transaction_status', $transvalue)) {
-	    			$transvalue['transaction_status'][$key2] = $transvalue['transaction_status'];
+	    			$transvalue['transaction_status'][$key2] = isset($transvalue['transaction_status'])?$transvalue['transaction_status']:'null';
 	    		}
 
 	    		if(!in_array('payment_type', $transvalue))
 	    		{
 	    			$transvalue['payment_type'][$key2] = 'null';
 	    		}elseif (in_array('payment_type', $transvalue)) {
-	    			$transvalue['payment_type'][$key2] = $transvalue['payment_type'];
+	    			$transvalue['payment_type'][$key2] = isset($transvalue['payment_type'])?$transvalue['payment_type']:'null';
 	    		}
 
 	    		if(!in_array('service_tax', $transvalue))
 	    		{
 	    			$transvalue['service_tax'][$key2] = 'null';
 	    		}elseif (in_array('service_tax', $transvalue)) {
-	    			$transvalue['service_tax'][$key2] = $transvalue['service_tax'];
+	    			$transvalue['service_tax'][$key2] = isset($transvalue['service_tax'])?$transvalue['service_tax']:'null';
 	    		}
 
 	    		
@@ -172,20 +173,21 @@ class GenExcel extends Controller
 	    		{
 	    			$transvalue['commission'][$key2] = 'null';
 	    		}elseif (in_array('commission', $transvalue)) {
-	    			$transvalue['commission'][$key2] = $transvalue['commission'];
+	    			$transvalue['commission'][$key2] = isset($transvalue['commission'])?$transvalue['commission']:'null';
 	    		}
 
 	    		if(!in_array('total_cost', $transvalue))
 	    		{
 	    			$transvalue['total_cost'][$key2] = 'null';
 	    		}elseif (in_array('total_cost', $transvalue)) {
-	    			$transvalue['total_cost'][$key2] = $transvalue['total_cost'];
+	    			$transvalue['total_cost'][$key2] = isset($transvalue['total_cost'])?$transvalue['total_cost']:'null';
 	    		}
 	    	
-
+	    	//	echo "<pre>";print_r($transvalue);
 
 	    	$exceldata[$key2]['Transaction Date'] =$transvalue['created_on'];
 	    	$reward_id = is_array($transvalue['reward_id']) ? $transvalue['reward_id'][$key2] : intval($transvalue['reward_id']);
+
 	    	$exceldata[$key2]['WB ID'] ="wbf_".$transvalue['user_id']."_".$transvalue['campaign_id']."_".$reward_id."_".$transvalue['transaction_id'];
 	    	$exceldata[$key2]['PG ID'] =isset($transvalue['payment_gateway_id']) ? $transvalue['payment_gateway_id'] : 'null';
 	    	$exceldata[$key2]['PG name'] =isset($transvalue['payment_gateway']) ? $transvalue['payment_gateway'] : 'null';
@@ -216,11 +218,13 @@ class GenExcel extends Controller
 
 	    	$exceldata[$key2]['Amount'] =isset($transvalue['amount']) ? intval($transvalue['amount']): 'null';
 	    	
-	    	$exceldata[$key2]['Campaign name'] =isset($transvalue['post_title']) ? $transvalue['post_title']: 'null';
+	    	//$exceldata[$key2]['Campaign name'] =isset($transvalue['post_title']) ? $transvalue['post_title']: 'null';
 	    	$exceldata[$key2]['Campaign ID'] =$transvalue['campaign_id'];
 
+	    	if(isset($transvalue['shipping_info'])){
 	    	$exceldata[$key2]['Backer name'] = array_unique(array_column($transvalue['shipping_info'],'shipping_name'));
 	    	$exceldata[$key2]['Backer name']  = !empty($exceldata[$key2]['Backer name']) ? $exceldata[$key2]['Backer name'][0] : 'null';
+	    	}
 
 	    	$exceldata[$key2]['Backer ID'] =$transvalue['user_id']; 
 	    	$exceldata[$key2]['First time backer (y/n)'] ='yes';
@@ -238,6 +242,7 @@ class GenExcel extends Controller
 
 	    	$exceldata[$key2]['Anonymous (y/n)'] = is_array($transvalue['anonymous']) ? $transvalue['anonymous'][$key2] : $transvalue['anonymous'];
 
+	    	if(isset($transvalue['shipping_info'])){
 	    	$exceldata[$key2]['Backer email'] = array_unique(array_column($transvalue['shipping_info'],'shipping_email')); 
 	    	$exceldata[$key2]['Backer email'] = !empty($exceldata[$key2]['Backer email']) ? $exceldata[$key2]['Backer email'][0] : 'null'; 
 
@@ -245,10 +250,11 @@ class GenExcel extends Controller
 	    	$exceldata[$key2]['Backer phone'] = !empty($exceldata[$key2]['Backer phone']) ? $exceldata[$key2]['Backer phone'][0] : 'null'; 
 
 	    	$backer_city = array_unique(array_column($transvalue['shipping_info'],'shipping_city'));
-	    	$exceldata[$key2]['Backer city'] = !empty($backer_city) ? $backer_city : 'null';  	
+	    	$exceldata[$key2]['Backer city'] = !empty($backer_city) ? $backer_city[0] : 'null';  	
 
 	    	$exceldata[$key2]['Backer country'] = array_unique(array_column($transvalue['shipping_info'],'shipping_country'));
 	    	$exceldata[$key2]['Backer country'] = !empty($exceldata[$key2]['Backer country']) ? $exceldata[$key2]['Backer country'][0] : 'null'; 
+	    	}
 
 	    	$exceldata[$key2]['International? (yes/no)'] = is_array($transvalue['international']) ? $transvalue['international'][$key2] : $transvalue['international']; 	
 	    	$exceldata[$key2]['Method of payment'] = is_array($transvalue['payment_type']) ? $transvalue['payment_type'][$key2] : $transvalue['payment_type'];
@@ -318,9 +324,10 @@ class GenExcel extends Controller
 	    	}
 
 	    }
+	    
 	    	//echo "<pre>";print_r($exceldata);die;
 
-	    	$filename = 'All transactions';
+	    	$filename = 'All transactions new';
 	    	\Excel::create($filename, function($excel) use ($filename, $exceldata) {
 
 			        // Set the title
