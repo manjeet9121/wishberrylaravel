@@ -343,6 +343,19 @@ class GenExcel extends Controller
 
 			        });
 
+					/*		        // Our first sheet
+					$excel->sheet('First sheet', function($sheet) {
+
+					});
+
+					// Our second sheet
+					$excel->sheet('Second sheet', function($sheet) {
+
+					});*/
+
+
+
+
 			    })->download('xls');
 	    
 

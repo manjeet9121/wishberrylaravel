@@ -38,3 +38,7 @@ Route::get('/excelgen','GenExcel@generate_excel');
 
 Route::get('/successexcelgen','SuccessGenExcel@generate_excel_success');
 
+
+
+Route::get('/olddata','OldData@wb_get_contributions');
+
