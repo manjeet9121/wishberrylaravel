@@ -10,19 +10,40 @@ use Redis;
 
 use App\Http\Requests;
 
-class OldData extends Controller
+class Queuetrans extends Controller
 {
     
-public function wb_get_contributions()
+public function queue_contributions()
     {
-    	
+    	ini_set('max_execution_time',0);
+		ini_set('memory_limit','500M');
     	$exceldata = [] ;
     	$indexkey_old = [];
+
+    	
+
     	$tansaction_data = AllTransaction::old_tansaction_data();
 	  	$tansaction_data  = Helpers::object2array($tansaction_data);
+
+	  	$new2 = array();
+		foreach ($tansaction_data as $value){
+		    $new2[] = $value['id'];
+		}
+		/*echo "<pre>";print_r(count($new2));*/
+		$reward_data = AllTransaction::reward_data($new2)->toArray();
+		
+		$shipping_country = AllTransaction::shipping_country($new2)->toArray();
+		
+		$shipping_city = AllTransaction::shipping_city($new2)->toArray();
+		
+		$shipping_pin = AllTransaction::shipping_pin($new2)->toArray();
+		/*echo "<pre>";print_r($shipping_pin);die;
+
+	  	echo "<pre>";print_r($reward_data);die;*/
 			
     	$OldData = AllTransaction::old_data();
         $OldData = Helpers::object2array($OldData);
+        echo "<pre>";print_r(count($OldData));
   		
     	$new1 = array();
 		foreach ($OldData as $value){
@@ -31,12 +52,13 @@ public function wb_get_contributions()
 		
 		
 		
-		$new2 = array();
+		/*$new2 = array();
 		foreach ($tansaction_data as $value){
 		    $new2[] = $value['id'];
 		}
-		$new2 = array_unique($new2);
+		$new2 = array_unique($new2);*/
 		$tes = array_diff($new1, $new2);
+		 echo "<pre>";print_r($tes);die;
 		
 		$diff = array();
 		foreach ($tes as $key => $v1){
@@ -45,7 +67,7 @@ public function wb_get_contributions()
 			    		$diff[] = $v2;
 			}
 		}
-		
+		echo "<pre>";print_r($diff);die;
 
 		foreach ($diff as $k3 => $v3) {
 			$indexkey_old[$v3['id']][] = $v3;
@@ -114,7 +136,7 @@ public function wb_get_contributions()
 			}
 
 		}
-		//echo "<pre>";print_r($exceldata);die;
+		echo "<pre>";print_r($exceldata);die;
 		
 
 
